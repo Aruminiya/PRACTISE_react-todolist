@@ -1,4 +1,4 @@
-import { Card, Box, Typography, TextField, Stack, Button } from '@mui/material';
+import { Card, Box, Typography, TextField, Stack, Button, Alert } from '@mui/material';
 import { useState, ChangeEvent } from 'react';
 import axios from 'axios';
 
@@ -18,20 +18,23 @@ async function signupAPI(data: { email: string; password: string; nickname: stri
 export default function Signup() {
   const [userData, setUserData] = useState(
     {
-      email: 'userTest001@gmail.com',
-      password: '12345678',
-      nickname: 'usetTest001'
+      email: '',
+      password: '',
+      nickname: ''
     }
   );
-  const [showError, setShowError] = useState('');
+  const [showError, setShowError] = useState<string[]>([]);
 
   const handleSignup = async () => {
     try {
-      const result = await signupAPI(userData);
-      console.log(result)
+      await signupAPI(userData);
     } catch(errMessage) {
-      console.log(errMessage);
-      setShowError(() => errMessage as string) // 直接传递错误信息字符串
+      console.error(errMessage);
+      if (Array.isArray(errMessage)) {
+        setShowError(errMessage as string[]); // 直接传递错误信息数组
+      } else {
+        setShowError([String(errMessage)]); // 如果不是数组，将其转换为字符串数组
+      }
     }
   };
 
@@ -41,16 +44,17 @@ export default function Signup() {
   };
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <Box margin={2} sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Card sx={{ minWidth: 400, padding: '16px' }}>
         <Stack spacing={2}>
           <Typography variant="h5" component="h2">會員註冊</Typography>
           <TextField
-            id="username"
-            label="帳號"
+            id="email"
+            label="Email"
             variant="outlined"
             name='email'
             fullWidth
+            type='text'
             value={userData.email}
             onChange={handleInputChange}
           />
@@ -70,15 +74,16 @@ export default function Signup() {
             variant="outlined"
             name='nickname'
             fullWidth
+            type='text'
             value={userData.nickname}
             onChange={handleInputChange}
           />
+          {showError.map(err => <Alert severity="error">{err}</Alert>)}
           <Stack direction="row" spacing={2}>
             <Button variant="contained" fullWidth onClick={() => handleSignup()}>確認註冊</Button>
             <Button variant="outlined" href='/login' fullWidth>前往登入</Button>
           </Stack>
         </Stack>
-        <p>{showError}</p>
       </Card>
     </Box>
   );
