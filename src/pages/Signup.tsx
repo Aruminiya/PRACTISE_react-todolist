@@ -1,7 +1,16 @@
 import { Card, Box, Typography, TextField, Stack, Button, Alert } from '@mui/material';
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
+
+import { useForm, SubmitHandler } from "react-hook-form";
 import axios from 'axios';
 
+type Inputs = {
+  email: string,
+  password: string,
+  nickname: string
+}
+
+// API
 async function signupAPI(data: { email: string; password: string; nickname: string }) {
   try {
     const response = await axios.post(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/users/sign_up`, data);
@@ -15,19 +24,23 @@ async function signupAPI(data: { email: string; password: string; nickname: stri
   }
 }
 
+
+
 export default function Signup() {
-  const [userData, setUserData] = useState(
-    {
-      email: '',
-      password: '',
-      nickname: ''
-    }
-  );
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+
   const [showError, setShowError] = useState<string[]>([]);
 
-  const handleSignup = async () => {
+  const handleSignup: SubmitHandler<Inputs> = async (data) => {
+    console.log('啟動驗證')
+    console.log(data);
     try {
-      await signupAPI(userData);
+      await signupAPI(data);
     } catch(errMessage) {
       console.error(errMessage);
       if (Array.isArray(errMessage)) {
@@ -38,51 +51,65 @@ export default function Signup() {
     }
   };
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => { // `ChangeEvent` 是 TypeScript 中用于描述表单元素（如输入框、选择框等）变化事件的类型。它是 React 提供的类型，用于确保在处理表单事件时具有正确的类型检查。
-    const { name, value } = event.target;
-    setUserData({ ...userData, [name]: value });
-  };
-
   return (
     <Box margin={2} sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Card sx={{ minWidth: 400, padding: '16px' }}>
         <Stack spacing={2}>
           <Typography variant="h5" component="h2">會員註冊</Typography>
-          <TextField
-            id="email"
-            label="Email"
-            variant="outlined"
-            name='email'
-            fullWidth
-            type='text'
-            value={userData.email}
-            onChange={handleInputChange}
-          />
-          <TextField
-            id="password"
-            label="密碼"
-            variant="outlined"
-            name='password'
-            fullWidth
-            type="password"
-            value={userData.password}
-            onChange={handleInputChange}
-          />
-          <TextField
-            id="nickname"
-            label="暱稱"
-            variant="outlined"
-            name='nickname'
-            fullWidth
-            type='text'
-            value={userData.nickname}
-            onChange={handleInputChange}
-          />
-          {showError.map(err => <Alert severity="error">{err}</Alert>)}
-          <Stack direction="row" spacing={2}>
-            <Button variant="contained" fullWidth onClick={() => handleSignup()}>確認註冊</Button>
-            <Button variant="outlined" href='/login' fullWidth>前往登入</Button>
-          </Stack>
+          <form onSubmit={handleSubmit(handleSignup)}>
+            <Stack spacing={2}>
+              <TextField
+                id="email"
+                label="Email"
+                variant="outlined"
+                fullWidth
+                type='text'
+                {...register("email", { 
+                  required: "Email 必填",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/, // Email 的驗證規則
+                    message: "無效的 Email 格式"
+                  }
+                })}
+              />
+              {errors.email ? <Alert severity="error">{errors?.email?.message}</Alert> : undefined}
+              <TextField
+                id="password"
+                label="密碼"
+                variant="outlined"
+                fullWidth
+                type="password"
+                {...register("password", { 
+                  required: "密碼必填",
+                  minLength: {
+                    value: 8,
+                    message: "密碼長度最少 8 字以上"
+                  } 
+                })}
+              />
+              {errors.password ? <Alert severity="error">{errors?.password?.message}</Alert> : undefined}
+              <TextField
+                id="nickname"
+                label="暱稱"
+                variant="outlined"
+                fullWidth
+                type='text'
+                {...register("nickname", {
+                  required: "暱稱必填",
+                  maxLength: {
+                    value: 20,
+                    message: "暱稱最多 20 字以下"
+                  } 
+                })}
+              />
+              {errors.nickname ? <Alert severity="error">{errors?.nickname?.message}</Alert> : undefined}
+              {showError.map(err => <Alert severity="error">{err}</Alert>)} {/* 後端驗證出錯的提示 */}
+              <Stack direction="row" spacing={2}>
+                <Button type='submit' variant="contained" fullWidth>確認註冊</Button>
+                <Button variant="outlined" href='/login' fullWidth>前往登入</Button>
+              </Stack>
+            </Stack>
+          </form>
         </Stack>
       </Card>
     </Box>
