@@ -51,8 +51,8 @@ export default function Login() {
   };
 
   return (
-    <Box margin={2} sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Card sx={{ minWidth: 400, padding: '16px' }}>
+    <Box sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Card sx={{ minWidth: 400, padding: '16px', boxSizing: 'border-box' }}>
         <Stack spacing={2}>
           <Typography variant="h5" component="h2">會員登入</Typography>
           <form onSubmit={handleSubmit(handleLogin)}>
