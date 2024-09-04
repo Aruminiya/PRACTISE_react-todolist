@@ -1,5 +1,6 @@
 import { Card, Box, Typography, TextField, Stack, Button, Alert } from '@mui/material';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import axios from 'axios';
@@ -24,10 +25,7 @@ async function signupAPI(data: { email: string; password: string; nickname: stri
   }
 }
 
-
-
 export default function Signup() {
-
   const {
     register,
     handleSubmit,
@@ -35,12 +33,12 @@ export default function Signup() {
   } = useForm<Inputs>();
 
   const [showError, setShowError] = useState<string[]>([]);
-
+  const navigate = useNavigate();
+  
   const handleSignup: SubmitHandler<Inputs> = async (data) => {
-    console.log('啟動驗證')
-    console.log(data);
     try {
       await signupAPI(data);
+      navigate('/login'); // 註冊成功後跳轉到登入頁面
     } catch(errMessage) {
       console.error(errMessage);
       if (Array.isArray(errMessage)) {
@@ -64,6 +62,8 @@ export default function Signup() {
                 variant="outlined"
                 fullWidth
                 type='text'
+                error={ errors.email ? true : false } 
+                helperText={errors?.email?.message}
                 {...register("email", { 
                   required: "Email 必填",
                   pattern: {
@@ -72,13 +72,14 @@ export default function Signup() {
                   }
                 })}
               />
-              {errors.email ? <Alert severity="error">{errors?.email?.message}</Alert> : undefined}
               <TextField
                 id="password"
                 label="密碼"
                 variant="outlined"
                 fullWidth
                 type="password"
+                error={ errors.password ? true : false } 
+                helperText={errors?.password?.message}
                 {...register("password", { 
                   required: "密碼必填",
                   minLength: {
@@ -87,13 +88,14 @@ export default function Signup() {
                   } 
                 })}
               />
-              {errors.password ? <Alert severity="error">{errors?.password?.message}</Alert> : undefined}
               <TextField
                 id="nickname"
                 label="暱稱"
                 variant="outlined"
                 fullWidth
                 type='text'
+                error={ errors.nickname ? true : false } 
+                helperText={errors?.nickname?.message}
                 {...register("nickname", {
                   required: "暱稱必填",
                   maxLength: {
@@ -102,7 +104,6 @@ export default function Signup() {
                   } 
                 })}
               />
-              {errors.nickname ? <Alert severity="error">{errors?.nickname?.message}</Alert> : undefined}
               {showError.map(err => <Alert severity="error">{err}</Alert>)} {/* 後端驗證出錯的提示 */}
               <Stack direction="row" spacing={2}>
                 <Button type='submit' variant="contained" fullWidth>確認註冊</Button>

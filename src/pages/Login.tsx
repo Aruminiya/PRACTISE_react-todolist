@@ -1,8 +1,18 @@
 import { Card, Box, Typography, TextField, Stack, Button, Alert } from '@mui/material';
-import { useState, ChangeEvent } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useForm, SubmitHandler } from "react-hook-form";
 import axios from 'axios';
 
-async function loginAPI(data: { email: string; password: string; }) {
+type Inputs = {
+  email: string,
+  password: string,
+  nickname: string
+}
+
+// API
+async function loginAPI(data: { email: string; password: string; nickname: string }) {
   try {
     const response = await axios.post(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/users/sign_in`, data);
     return response;
@@ -16,17 +26,20 @@ async function loginAPI(data: { email: string; password: string; }) {
 }
 
 export default function Login() {
-  const [userData, setUserData] = useState(
-    {
-      email: '',
-      password: '',
-    }
-  );
-  const [showError, setShowError] = useState<string[]>([]); // `<string[]>([])` 是 TypeScript 中的类型断言，用于明确指定一个变量的类型。在这个上下文中，它用于初始化 `useState` 钩子，并明确指定 `showError` 的类型为 `string[]`（字符串数组）。
-  console.log(showError)
-  const handleLogin = async () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Inputs>();
+
+  const [showError, setShowError] = useState<string[]>([]);
+  const navigate = useNavigate();
+  
+  const handleLogin: SubmitHandler<Inputs> = async (data) => {
     try {
-      await loginAPI(userData);
+      const result = await loginAPI(data);
+      localStorage.setItem("userData",JSON.stringify(result.data)); // 把登入的 Token 存入 localhost
+      navigate('/todoList'); // 登入成功後跳轉到 TodoList 頁面
     } catch(errMessage) {
       console.error(errMessage);
       if (Array.isArray(errMessage)) {
@@ -37,47 +50,54 @@ export default function Login() {
     }
   };
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => { // `ChangeEvent` 是 TypeScript 中用于描述表单元素（如输入框、选择框等）变化事件的类型。它是 React 提供的类型，用于确保在处理表单事件时具有正确的类型检查。
-    const { name, value } = event.target;
-    setUserData({ ...userData, [name]: value });
-  };
-
   return (
-    <>
-      <Box margin={2} sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <Card sx={{ minWidth: 400, padding: '16px' }}>
-          <Stack spacing={2}>
-            <Typography variant="h5" component="h2">會員登入</Typography>
-            <TextField
-              id="email"
-              label="Email"
-              name='email'
-              variant="outlined"
-              fullWidth
-              type='text'
-              value={userData.email}
-              onChange={handleInputChange}
-            />
-            <TextField
-              id="password"
-              label="密碼"
-              name='password'
-              variant="outlined"
-              fullWidth
-              type='password'
-              value={userData.password}
-              onChange={handleInputChange}
-            />
-            {showError.map(err => <Alert severity="error">{err}</Alert>)}
-            <Stack direction="row" spacing={2}>
-              <Button variant="contained" fullWidth onClick={() => handleLogin()}>確認登入</Button>
-              <Button variant="outlined" href='/signup' fullWidth>前往註冊</Button>
+    <Box margin={2} sx={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Card sx={{ minWidth: 400, padding: '16px' }}>
+        <Stack spacing={2}>
+          <Typography variant="h5" component="h2">會員登入</Typography>
+          <form onSubmit={handleSubmit(handleLogin)}>
+            <Stack spacing={2}>
+              <TextField
+                id="email"
+                label="Email"
+                variant="outlined"
+                fullWidth
+                type='text'
+                error={ errors.email ? true : false } 
+                helperText={errors?.email?.message}
+                {...register("email", { 
+                  required: "Email 必填",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/, // Email 的驗證規則
+                    message: "無效的 Email 格式"
+                  }
+                })}
+              />
+              <TextField
+                id="password"
+                label="密碼"
+                variant="outlined"
+                fullWidth
+                type="password"
+                error={ errors.password ? true : false } 
+                helperText={errors?.password?.message}
+                {...register("password", { 
+                  required: "密碼必填",
+                  minLength: {
+                    value: 8,
+                    message: "密碼長度最少 8 字以上"
+                  } 
+                })}
+              />
+              {showError.map(err => <Alert key={err} severity="error">{err}</Alert>)} {/* 後端驗證出錯的提示 */}
+              <Stack direction="row" spacing={2}>
+                <Button type='submit' variant="contained" fullWidth>確認登入</Button>
+                <Button variant="outlined" href='/signup' fullWidth>前往註冊</Button>
+              </Stack>
             </Stack>
-          </Stack>
-          
-        </Card>
-      </Box>
-
-    </>
+          </form>
+        </Stack>
+      </Card>
+    </Box>
   );
-};
+}
