@@ -93,6 +93,7 @@ export default function TodoList() {
 
   useEffect(() => {
     handleGetTodo();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
