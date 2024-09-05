@@ -1,7 +1,8 @@
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, TextField, Stack, Button } from '@mui/material';
 
 import { useEffect, useState, useContext } from 'react';
-import { HexApiContext } from '../components/HexApiContextProvider.tsx';
+import { HexApiContext } from '../context/HexApiContextProvider.tsx';
+import { useNavigate } from 'react-router-dom';
 
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
@@ -21,11 +22,24 @@ type Todo = {
 
 export default function TodoList() {
   const HexApiCtx = useContext(HexApiContext);
-  const { getTodo, postTodo, putTodo, deleteTodo, patchTodo } = HexApiCtx;
+  const { getTodo, postTodo, putTodo, deleteTodo, patchTodo, checkout } = HexApiCtx;
+  const navigate = useNavigate();
+
+  const checkTokenStatus = async () => {
+    try {
+      await checkout();
+      handleGetTodo();
+    } catch(error) {
+      console.log(error);
+      navigate('/login');
+    }
+  };
+ 
 
   const [ rowData, setRowData ] = useState<Todo[]>([]);
   const [ editDataId, setEditDataId ] = useState<string>('');
   const [ newTodo, setNewTodo ] = useState<string>('');
+  
 
   const handleGetTodo = async () => {
     try {
@@ -92,7 +106,7 @@ export default function TodoList() {
   }
 
   useEffect(() => {
-    handleGetTodo();
+    checkTokenStatus();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

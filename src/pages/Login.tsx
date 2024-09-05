@@ -1,9 +1,10 @@
 import { Card, Box, Typography, TextField, Stack, Button, Alert } from '@mui/material';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios from 'axios';
+
+import { HexApiContext } from '../context/HexApiContextProvider.tsx';
 
 type Inputs = {
   email: string,
@@ -11,21 +12,10 @@ type Inputs = {
   nickname: string
 }
 
-// API
-async function loginAPI(data: { email: string; password: string; nickname: string }) {
-  try {
-    const response = await axios.post(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/users/sign_in`, data);
-    return response;
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      throw error.response?.data.message
-    } else {
-      throw error // `axios.isAxiosError` 是 Axios 提供的一个类型保护（type guard）函数，用于检查一个错误对象是否是由 Axios 请求引发的。这在处理错误时非常有用，因为它允许你区分 Axios 错误和其他类型的错误，从而可以更有针对性地处理错误。
-    }
-  }
-}
-
 export default function Login() {
+  const HexApiCtx = useContext(HexApiContext);
+  const { login } = HexApiCtx;
+
   const {
     register,
     handleSubmit,
@@ -37,7 +27,7 @@ export default function Login() {
   
   const handleLogin: SubmitHandler<Inputs> = async (data) => {
     try {
-      const result = await loginAPI(data);
+      const result = await login(data);
       localStorage.setItem("userData",JSON.stringify(result.data)); // 把登入的 Token 存入 localhost
       navigate('/todoList'); // 登入成功後跳轉到 TodoList 頁面
     } catch(errMessage) {
