@@ -1,6 +1,8 @@
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, TextField, Stack, Button } from '@mui/material';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
+
+import { useEffect, useState, useContext } from 'react';
+import { HexApiContext } from '../components/HexApiContextProvider.tsx';
+
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,98 +11,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 import { formatTimestampToDate } from '../utils/dateUtils.ts';
 
-const token: string = JSON.parse(localStorage.getItem('userData')!).token;
-
-// 取得待辦事項
-async function getTodo() {
-  try {
-    const result = await axios.get(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/todos`,{
-      headers: {
-        Authorization: token
-      }
-    })
-    const { data } = result.data
-    return data
-  } catch(error) {
-    console.error(error);
-    throw error
-  }
-};
-
-// 新增待辦事項
-async function postTodo(content: string) {
-  try {
-    const result = await axios.post(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/todos`,
-      {
-        content
-      },
-      {
-      headers: {
-        Authorization: token
-      }
-    })
-    return result
-  } catch(error) {
-    console.error(error);
-    throw error
-  }
-};
-
-// 修改待辦事項
-async function putTodo(content: string , id: string) {
-  try {
-    const result = await axios.put(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/todos/${id}`,
-      {
-        content
-      },
-      {
-      headers: {
-        Authorization: token
-      }
-    })
-
-    return result
-  } catch(error) {
-    console.error(error);
-    throw error
-  }
-};
-
-// 刪除待辦事項
-async function deleteTodo(id: string) {
-  try {
-    const result = await axios.delete(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/todos/${id}`,
-      {
-      headers: {
-        Authorization: token
-      }
-    })
-    return result
-  } catch(error) {
-    console.error(error);
-    throw error
-  }
-};
-
-// 修改待辦事項狀態
-async function patchTodo(id: string) {
-  try {
-    const result = await axios.patch(`${import.meta.env.VITE_HEX_TODOLIST_HOST}/todos/${id}/toggle`,
-      {},
-      {
-      headers: {
-        Authorization: token
-      }
-    })
-    return result
-  } catch(error) {
-    console.error(error);
-    throw error
-  }
-};
-
 // 定義待辦事項的接口
-interface Todo {
+type Todo = {
   id: string;
   status: boolean;
   content: string;
@@ -108,13 +20,17 @@ interface Todo {
 }
 
 export default function TodoList() {
+  const HexApiCtx = useContext(HexApiContext);
+  const { getTodo, postTodo, putTodo, deleteTodo, patchTodo } = HexApiCtx
+
   const [ rowData, setRowData ] = useState<Todo[]>([]);
   const [ editDataId, setEditDataId ] = useState<string>('');
   const [ newTodo, setNewTodo ] = useState<string>('');
 
   const handleGetTodo = async () => {
     try {
-      const data = await getTodo();
+      const response = await getTodo();
+      const data: Todo[] = response.data;
       setRowData(() => data);
     } catch (error) {
       console.error(error);
@@ -242,7 +158,6 @@ export default function TodoList() {
             </Table>
           </TableContainer>
         </Stack>
-
       </Container>
     </>
   );

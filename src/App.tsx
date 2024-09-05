@@ -3,13 +3,13 @@ import { styled } from '@mui/system';
 import Navbar from './components/Navbar.tsx';
 import Router from './router/Router.tsx';
 
+import HexApiContextProvider from './components/HexApiContextProvider.tsx';
+
 const MainScreen = styled('div')(() => ({
-  // border: 'solid 1px red',
   display: "flex",
   height: '100%',
   flexDirection: "column",
   "& main": {
-    // border: 'solid 1px blue',
     position: 'relative',
     isOverflown: 'auto',
     flex: 1,
@@ -18,14 +18,16 @@ const MainScreen = styled('div')(() => ({
 
 function App() {
   return (
-    <MainScreen>
-      <nav>
-        <Navbar />
-      </nav>
-      <main>
-        <Router />
-      </main>
-    </MainScreen>
+    <HexApiContextProvider>
+      <MainScreen>
+        <nav>
+          <Navbar />
+        </nav>
+        <main>
+          <Router />
+        </main>
+      </MainScreen>
+    </HexApiContextProvider>
   )
 }
 
