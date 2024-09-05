@@ -21,7 +21,7 @@ type Todo = {
 
 export default function TodoList() {
   const HexApiCtx = useContext(HexApiContext);
-  const { getTodo, postTodo, putTodo, deleteTodo, patchTodo } = HexApiCtx
+  const { getTodo, postTodo, putTodo, deleteTodo, patchTodo } = HexApiCtx;
 
   const [ rowData, setRowData ] = useState<Todo[]>([]);
   const [ editDataId, setEditDataId ] = useState<string>('');
