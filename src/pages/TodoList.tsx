@@ -7,6 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 
+import { formatTimestampToDate } from '../utils/dateUtils.ts';
+
 const token: string = JSON.parse(localStorage.getItem('userData')!).token;
 
 // 取得待辦事項
@@ -192,42 +194,50 @@ export default function TodoList() {
                   <TableCell>完成</TableCell>
                   <TableCell sx={{ width: '60%' }}>待辦內容</TableCell>
                   <TableCell align="right">建立時間</TableCell>
-                  <TableCell align="right">編輯/刪除</TableCell>
+                  <TableCell align="right">{editDataId === '' ? '編輯/刪除' : '確定/取消'}</TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {rowData.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Checkbox checked={row.status} onClick={() => handlePatchTodo(row.id)}/>
-                    </TableCell>
-                    <TableCell>{editDataId === row.id ? <TextField value={row.content} onChange={(e)=>{handleEditContent(e.target.value, row.id)}}/> : <span>{row.content}</span>}</TableCell>
-                    <TableCell align="right">{row.createTime}</TableCell>
-                    <TableCell align="right">
-                      {editDataId === row.id ? 
-                      <>
-                        <IconButton onClick={()=>handlePutTodo(row.id)}>
-                          <CheckIcon/>
-                        </IconButton>
-                        <IconButton onClick={()=>setEditDataId('')}>
-                          <ClearIcon />
-                        </IconButton>
-                      </> :
-                      <>
-                        <IconButton onClick={()=>setEditDataId(row.id)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={()=>handleDeleteTodo(row.id)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </>
-                      }
+              <TableBody >
+              {rowData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} sx={{ textAlign: 'center', height: '200px' }}>
+                      <h1>尚未有待辦事項</h1>
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  rowData.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        <Checkbox checked={row.status} onClick={() => handlePatchTodo(row.id)}/>
+                      </TableCell>
+                      <TableCell>{editDataId === row.id ? <TextField value={row.content} onChange={(e)=>{handleEditContent(e.target.value, row.id)}}/> : <span>{row.content}</span>}</TableCell>
+                      <TableCell align="right">{formatTimestampToDate(Number(row.createTime))}</TableCell>
+                      <TableCell align="right">
+                        {editDataId === row.id ? 
+                        <>
+                          <IconButton onClick={()=>handlePutTodo(row.id)}>
+                            <CheckIcon/>
+                          </IconButton>
+                          <IconButton onClick={()=>setEditDataId('')}>
+                            <ClearIcon />
+                          </IconButton>
+                        </> :
+                        <>
+                          <IconButton onClick={()=>setEditDataId(row.id)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={()=>handleDeleteTodo(row.id)}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </>
+                        }
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>
