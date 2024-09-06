@@ -1,5 +1,5 @@
 import { AppBar, Box, Toolbar, Link, Stack } from '@mui/material';
-import { useEffect, useState, useContext } from 'react';
+import { useContext } from 'react';
 import { HexApiContext } from '../context/HexApiContextProvider.tsx';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,25 +19,17 @@ const links = [
 ];
 
 export default function Navbar() {
-  const [ token, setToken ] = useState<boolean>(false);
   const HexApiCtx = useContext(HexApiContext);
-  const { signout, checkTokenStatus } = HexApiCtx;
+  const { signout } = HexApiCtx;
   const navigate = useNavigate();
+
+  const token = localStorage.getItem('userData');
 
   const handleLogOut = async () => {
     await signout();
     localStorage.removeItem('userData');
-    setToken(() => false);
     navigate('/');
   };
-
-  useEffect(()=>{
-    checkTokenStatus(() => {
-      setToken(() => true);
-    }, () => {
-      setToken(() => false);
-    });
-  }, []);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
