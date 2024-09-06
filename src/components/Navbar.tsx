@@ -19,27 +19,24 @@ const links = [
 ];
 
 export default function Navbar() {
-  const [ token, setToken ] = useState<boolean | undefined>(false);
+  const [ token, setToken ] = useState<boolean>(false);
   const HexApiCtx = useContext(HexApiContext);
-  const { signout } = HexApiCtx;
+  const { signout, checkTokenStatus } = HexApiCtx;
   const navigate = useNavigate();
-  
-
-  const handleCheckHaveToken = () => {
-    setToken(()=>{
-      const getToken = JSON.parse(localStorage.getItem('userData')!);
-      return getToken
-    })
-  };
 
   const handleLogOut = async () => {
     await signout();
     localStorage.removeItem('userData');
+    setToken(() => false);
     navigate('/');
   };
 
   useEffect(()=>{
-    handleCheckHaveToken();
+    checkTokenStatus(() => {
+      setToken(() => true);
+    }, () => {
+      setToken(() => false);
+    });
   }, []);
 
   return (
