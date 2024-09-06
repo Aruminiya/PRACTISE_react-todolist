@@ -1,7 +1,7 @@
 import { AppBar, Box, Toolbar, Link, Stack } from '@mui/material';
 import { useEffect, useState, useContext } from 'react';
 import { HexApiContext } from '../context/HexApiContextProvider.tsx';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const links = [
   {

@@ -198,7 +198,12 @@ export default function HexApiContextProvider({ children }: HexApiContextProvide
   const checkTokenStatus = async (success: () => void , fail: () => void) => {
     try {
       await checkout();
-      success();
+      const token = JSON.parse(localStorage.getItem('userData')!);
+      if ( token ) {
+        success();
+      } else {
+        fail();
+      }
     } catch(error) {
       console.log(error);
       fail();
