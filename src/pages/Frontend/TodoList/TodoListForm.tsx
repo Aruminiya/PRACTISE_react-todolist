@@ -17,7 +17,7 @@ type Todo = {
   status: boolean;
   content: string;
   createTime: string;
-}
+};
 
 export default function TodoList() {
   const HexApiCtx = useContext(HexApiContext);
@@ -26,7 +26,6 @@ export default function TodoList() {
   const [ rowData, setRowData ] = useState<Todo[]>([]);
   const [ editDataId, setEditDataId ] = useState<string>('');
   const [ newTodo, setNewTodo ] = useState<string>('');
-  
 
   const handleGetTodo = async () => {
     try {
@@ -35,6 +34,17 @@ export default function TodoList() {
       setRowData(() => data);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleCheckedStatus = () => {
+    const rowDataCheckedStatus = rowData.filter((e)=> e.status === true);
+    if ( rowDataCheckedStatus.length === 0 ) {
+      return "unchecked"
+    } else if ( rowDataCheckedStatus.length === rowData.length ) {
+      return "checked"
+    } else {
+      return "indeterminate"
     }
   };
 
@@ -65,7 +75,7 @@ export default function TodoList() {
 
       return newValue
     })
-  }
+  };
 
   const handlePutTodo = async (id: string) => {
     try {
@@ -80,6 +90,21 @@ export default function TodoList() {
     } catch (error) {
       handleGetTodo();
       console.error(error);
+    }
+  };
+
+  const handleCheckAll = async () => {
+    if (handleCheckedStatus() === "indeterminate") {
+      const promises = rowData.map((e) => {
+        if (e.status === false) {
+          return handlePatchTodo(e.id);
+        }
+        return Promise.resolve();
+      });
+      await Promise.all(promises);
+    } else {
+      const promises = rowData.map((e) => handlePatchTodo(e.id));
+      await Promise.all(promises);
     }
   };
 
@@ -109,7 +134,13 @@ export default function TodoList() {
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <TableCell>完成</TableCell>
+                  <TableCell>
+                    <Checkbox
+                      checked={handleCheckedStatus() === "checked"}
+                      indeterminate={handleCheckedStatus() === "indeterminate"}
+                      onClick={()=>handleCheckAll()}
+                    />
+                  </TableCell>
                   <TableCell sx={{ width: '60%' }}>待辦內容</TableCell>
                   <TableCell align="right">建立時間</TableCell>
                   <TableCell align="right">{editDataId === '' ? '編輯/刪除' : '確定/取消'}</TableCell>
