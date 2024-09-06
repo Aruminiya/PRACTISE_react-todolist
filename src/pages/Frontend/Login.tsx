@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useForm, SubmitHandler } from "react-hook-form";
 
-import { HexApiContext } from '../context/HexApiContextProvider.tsx';
+import { HexApiContext } from '../../context/HexApiContextProvider.tsx';
 
 type Inputs = {
   email: string,

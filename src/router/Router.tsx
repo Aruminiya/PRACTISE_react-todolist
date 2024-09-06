@@ -1,35 +1,42 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Index from '../pages/Index.tsx';
-import Login from "../pages/Login.tsx";
-import Signup from "../pages/Signup.tsx";
-import TodoList from "../pages/TodoList/index.tsx";
-import TodoListForm from "../pages/TodoList/TodoListForm.tsx";
-import TodoListDate from "../pages/TodoList/TodoListDate.tsx";
+import Frontend from '../pages/Frontend/index.tsx';
+import Home from '../pages/Frontend/Home.tsx';
+import Login from "../pages/Frontend/Login.tsx";
+import Signup from "../pages/Frontend/Signup.tsx";
+import TodoList from "../pages/Frontend/TodoList/index.tsx";
+import TodoListForm from "../pages/Frontend/TodoList/TodoListForm.tsx";
+import TodoListDate from "../pages/Frontend/TodoList/TodoListDate.tsx";
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Index />
-  },
-  {
-    path: '/login',
-    element: <Login />
-  },
-  {
-    path: '/signup',
-    element: <Signup />
-  },
-  {
-    path: '/todoList',
-    element: <TodoList/>,
+    element: <Frontend />,
     children: [
       {
-        path: '/todoList/todoList-form',
-        element: <TodoListForm />,
+        path: '/',
+        element: <Home />,
       },
       {
-        path: '/todoList/todoList-date',
-        element: <TodoListDate />
+        path: '/login',
+        element: <Login />
+      },
+      {
+        path: '/signup',
+        element: <Signup />
+      },
+      {
+        path: '/todoList',
+        element: <TodoList/>,
+        children: [
+          {
+            path: '/todoList/todoList-form',
+            element: <TodoListForm />,
+          },
+          {
+            path: '/todoList/todoList-date',
+            element: <TodoListDate />
+          }
+        ]
       }
     ]
   }

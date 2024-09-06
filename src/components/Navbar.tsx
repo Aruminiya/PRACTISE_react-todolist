@@ -22,7 +22,7 @@ export default function Navbar() {
   const [ token, setToken ] = useState<boolean | undefined>(false);
   const HexApiCtx = useContext(HexApiContext);
   const { signout } = HexApiCtx;
-  // const location = useLocation();
+  const navigate = useNavigate();
   
 
   const handleCheckHaveToken = () => {
@@ -35,7 +35,7 @@ export default function Navbar() {
   const handleLogOut = async () => {
     await signout();
     localStorage.removeItem('userData');
-    window.location.href = '/';
+    navigate('/');
   };
 
   useEffect(()=>{
