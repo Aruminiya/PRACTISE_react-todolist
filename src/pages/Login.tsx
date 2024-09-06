@@ -29,7 +29,7 @@ export default function Login() {
     try {
       const result = await login(data);
       localStorage.setItem("userData",JSON.stringify(result.data)); // 把登入的 Token 存入 localhost
-      navigate('/todoList'); // 登入成功後跳轉到 TodoList 頁面
+      navigate('/todoList/todoList-form'); // 登入成功後跳轉到 TodoList 頁面
     } catch(errMessage) {
       console.error(errMessage);
       if (Array.isArray(errMessage)) {
@@ -90,4 +90,4 @@ export default function Login() {
       </Card>
     </Box>
   );
-}
+};

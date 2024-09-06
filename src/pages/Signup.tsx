@@ -115,4 +115,4 @@ export default function Signup() {
       </Card>
     </Box>
   );
-}
+};

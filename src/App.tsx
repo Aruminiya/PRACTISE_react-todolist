@@ -2,7 +2,6 @@ import { styled } from '@mui/system';
 
 import Navbar from './components/Navbar.tsx';
 import Router from './router/Router.tsx';
-
 import HexApiContextProvider from './context/HexApiContextProvider.tsx';
 
 const MainScreen = styled('div')(() => ({
@@ -17,6 +16,7 @@ const MainScreen = styled('div')(() => ({
 }));
 
 function App() {
+
   return (
     <HexApiContextProvider>
       <MainScreen>

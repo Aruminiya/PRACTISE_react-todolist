@@ -1,5 +1,5 @@
 import { createContext, ReactNode } from 'react';
-import axios, {AxiosResponse} from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 type HexApiContextValue = {
   login: (data: loginData) => Promise<AxiosResponse>;
@@ -11,6 +11,7 @@ type HexApiContextValue = {
   putTodo: (content: string, id: string) => Promise<AxiosResponse>;
   deleteTodo: (id: string) => Promise<AxiosResponse>;
   patchTodo: (id: string) => Promise<AxiosResponse>;
+  checkTokenStatus: (success: () => void, fail: () => void) => Promise<void>;
 };
 
 type HexApiContextProviderProps = {
@@ -29,7 +30,8 @@ export const HexApiContext = createContext<HexApiContextValue>({
   postTodo: () => Promise.resolve({} as AxiosResponse),
   putTodo: () => Promise.resolve({} as AxiosResponse),
   deleteTodo: () => Promise.resolve({} as AxiosResponse),
-  patchTodo: () => Promise.resolve({} as AxiosResponse)
+  patchTodo: () => Promise.resolve({} as AxiosResponse),
+  checkTokenStatus: () => Promise.resolve()
 });
 
 const getToken = () => JSON.parse(localStorage.getItem('userData')!).token;
@@ -45,7 +47,7 @@ export default function HexApiContextProvider({ children }: HexApiContextProvide
       if (axios.isAxiosError(error)) {
         throw error.response?.data.message
       } else {
-        throw error // `axios.isAxiosError` 是 Axios 提供的一个类型保护（type guard）函数，用于检查一个错误对象是否是由 Axios 请求引发的。这在处理错误时非常有用，因为它允许你区分 Axios 错误和其他类型的错误，从而可以更有针对性地处理错误。
+        throw error
       }
     }
   };
@@ -59,7 +61,7 @@ export default function HexApiContextProvider({ children }: HexApiContextProvide
       if (axios.isAxiosError(error)) {
         throw error.response?.data.message
       } else {
-        throw error // `axios.isAxiosError` 是 Axios 提供的一个类型保护（type guard）函数，用于检查一个错误对象是否是由 Axios 请求引发的。这在处理错误时非常有用，因为它允许你区分 Axios 错误和其他类型的错误，从而可以更有针对性地处理错误。
+        throw error
       }
     }
   };
@@ -191,5 +193,17 @@ export default function HexApiContextProvider({ children }: HexApiContextProvide
     }
   };
 
-  return <HexApiContext.Provider value={{ login, signup, checkout, signout, getTodo, postTodo, putTodo, deleteTodo, patchTodo }}>{children}</HexApiContext.Provider>;
-}
+
+  // 檢查登入狀態
+  const checkTokenStatus = async (success: () => void , fail: () => void) => {
+    try {
+      await checkout();
+      success();
+    } catch(error) {
+      console.log(error);
+      fail();
+    }
+  };
+
+  return <HexApiContext.Provider value={{ login, signup, checkout, signout, getTodo, postTodo, putTodo, deleteTodo, patchTodo, checkTokenStatus }}>{children}</HexApiContext.Provider>;
+};

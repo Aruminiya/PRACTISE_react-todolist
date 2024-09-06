@@ -2,8 +2,8 @@ import { useState, useContext, useEffect } from 'react';
 import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { HexApiContext } from '../context/HexApiContextProvider.tsx';
-import { formatTimestampToDate } from '../utils/dateUtils.ts';
+import { HexApiContext } from '../../context/HexApiContextProvider.tsx';
+import { formatTimestampToDate } from '../../utils/dateUtils.ts';
 
 import { Container, Box } from '@mui/material';
 

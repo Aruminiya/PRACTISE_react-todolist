@@ -2,8 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Index from '../pages/Index.tsx';
 import Login from "../pages/Login.tsx";
 import Signup from "../pages/Signup.tsx";
-import TodoList from "../pages/TodoList.tsx";
-import TodoListDate from "../pages/TodoListDate.tsx";
+import TodoList from "../pages/TodoList/index.tsx";
+import TodoListForm from "../pages/TodoList/TodoListForm.tsx";
+import TodoListDate from "../pages/TodoList/TodoListDate.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,12 +21,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/todoList',
-    element: <TodoList />
-  },
-  {
-    path: '/todoList-date',
-    element: <TodoListDate />
+    element: <TodoList/>,
+    children: [
+      {
+        path: '/todoList/todoList-form',
+        element: <TodoListForm />,
+      },
+      {
+        path: '/todoList/todoList-date',
+        element: <TodoListDate />
+      }
+    ]
   }
+
 ]);
 
 export default function Router() {
