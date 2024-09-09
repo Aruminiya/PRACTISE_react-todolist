@@ -17,17 +17,15 @@ import { Outlet } from "react-router-dom";
 
 export default function Index() {
   return (
-    <>
-      <HexApiContextProvider>
-        <MainScreen>
-          <nav>
-            <Navbar />
-          </nav>
-          <main>
-            <Outlet />
-          </main>
-        </MainScreen>
-      </HexApiContextProvider>
-    </>
+    <HexApiContextProvider>
+      <MainScreen>
+        <nav>
+          <Navbar />
+        </nav>
+        <main>
+          <Outlet />
+        </main>
+      </MainScreen>
+    </HexApiContextProvider>
   );
 };

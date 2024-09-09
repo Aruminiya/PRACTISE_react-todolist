@@ -15,9 +15,5 @@ export default function TodoList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <>
-      <Outlet />
-    </>
-  );
+  return <Outlet />
 };

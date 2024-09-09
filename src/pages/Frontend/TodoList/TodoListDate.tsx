@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -33,7 +33,7 @@ export default function TodoListDate() {
   const HexApiCtx = useContext(HexApiContext);
   const { getTodo } = HexApiCtx;
 
-  async function getTodoEvent () {
+  const getTodoEvent =  useCallback(async () => {
     const result = await getTodo();
     const todoDatas: [] = result.data;
     const todoDatatoDateEvent = todoDatas.map((todoData: { content: string, createTime: number }) => (
@@ -46,12 +46,11 @@ export default function TodoListDate() {
       }
     ));
     setEvents((prev) => [...prev, ...todoDatatoDateEvent]);
-  };
+  }, [getTodo]);
 
   useEffect(() => {
     getTodoEvent();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getTodoEvent]);
 
   return (
     <Container>
