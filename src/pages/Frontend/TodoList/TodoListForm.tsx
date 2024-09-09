@@ -1,6 +1,6 @@
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, TextField, Stack, Button } from '@mui/material';
 
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import { HexApiContext } from '../../../context/HexApiContextProvider.tsx';
 
 import IconButton from '@mui/material/IconButton';
@@ -27,7 +27,7 @@ export default function TodoList() {
   const [ editDataId, setEditDataId ] = useState<string>('');
   const [ newTodo, setNewTodo ] = useState<string>('');
 
-  const handleGetTodo = async () => {
+  const handleGetTodo = useCallback(async () => {
     try {
       const response = await getTodo();
       const data: Todo[] = response.data;
@@ -35,7 +35,7 @@ export default function TodoList() {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [getTodo]);
 
   const handleCheckedStatus = () => {
     const rowDataCheckedStatus = rowData.filter((e)=> e.status === true);
@@ -118,9 +118,9 @@ export default function TodoList() {
   };
 
   useEffect(() => {
+    console.log('useEffect')
     handleGetTodo();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [handleGetTodo]);
 
   return (
     <> 
