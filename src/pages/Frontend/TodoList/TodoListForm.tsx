@@ -1,6 +1,6 @@
 import { Container, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Checkbox, TextField, Stack, Button } from '@mui/material';
 
-import { useEffect, useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { HexApiContext } from '../../../context/HexApiContextProvider.tsx';
 
 import IconButton from '@mui/material/IconButton';
@@ -115,7 +115,7 @@ export default function TodoList() {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     handleGetTodo();

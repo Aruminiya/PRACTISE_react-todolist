@@ -45,9 +45,8 @@ export default function TodoListDate() {
         allDay: true
       }
     ));
-    console.log(todoDatatoDateEvent);
     setEvents((prev) => [...prev, ...todoDatatoDateEvent]);
-  }
+  };
 
   useEffect(() => {
     getTodoEvent();
