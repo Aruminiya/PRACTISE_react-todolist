@@ -36,6 +36,7 @@ export default function TodoList() {
       console.error(error);
     }
   }, [getTodo]);
+  // `useCallback` 是 React 中的一個 Hook，用於優化函數的創建和重建。它的主要用途是避免在每次渲染時重新創建函數，從而提高性能，特別是在函數被傳遞給子組件或用作依賴的情況下。
 
   const handleCheckedStatus = () => {
     const rowDataCheckedStatus = rowData.filter((e)=> e.status === true);
@@ -118,7 +119,6 @@ export default function TodoList() {
   };
 
   useEffect(() => {
-    console.log('useEffect')
     handleGetTodo();
   }, [handleGetTodo]);
 
